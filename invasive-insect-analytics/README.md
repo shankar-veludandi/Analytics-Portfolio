@@ -1,70 +1,65 @@
 # Invasive Insect Spread Analytics
 
-**Type:** Environmental Data Science · Spatio-Temporal Forecasting  
+Environmental data science project using citizen-science observations to forecast the spatial spread of invasive insect species across the northeastern United States.
+
+**Type:** Environmental Analytics · Spatio-Temporal Forecasting  
 **Tech:** Python, TensorFlow/Keras, GeoPandas, Matplotlib
 
-## Project Overview
+---
 
-Invasive insect species cost the U.S. billions of dollars each year and threaten native ecosystems. Conservation agencies need to know **where these species are likely to appear next** to target monitoring and treatment.
+## Business Problem
 
-This project builds a data pipeline and forecasting model using iNaturalist observations to:
+Invasive insects cost the U.S. billions of dollars and threaten native ecosystems. Conservation agencies need to know **where these species are likely to appear next** to proactively target monitoring and treatment.
 
-1. Classify invasive vs native look-alike insects, and  
-2. Predict the future spread pattern of key invasive species across the northeastern U.S.
+This project asks:
 
-## Data
+- How are invasive vs native look-alike species distributed across space and time?
+- Can we forecast near-term spread patterns to highlight high-risk regions?
+- Where is the model confident vs uncertain, and how can that guide data collection and field operations?
 
-- **Source:** iNaturalist API
+---
+
+## Data & Scope
+
+- **Source:** iNaturalist API (citizen-science observations)  
 - **Scale:**  
-  - ~69k images of target invasive insects  
-  - ~34k images of native look-alikes
-- **Region:** Northeastern United States
-- **Features:**
-  - Latitude / longitude of each observation
-  - Date (year, month, day) and derived **seasonality index**
-  - Region codes (e.g., state / eco-region)
+  - ~69k images of invasive target species  
+  - ~34k images of native look-alikes  
+- **Region:** Northeastern United States  
+- **Granularity:** Individual observation with latitude/longitude and timestamp  
+- **Derived features:** Seasonality indicators, spatial grid cells, and region codes
 
-## Analytical Pipeline
+---
 
-1. **Data Acquisition & Cleaning**
-   - Fetched image metadata and geolocation via iNaturalist
-   - Filtered target vs look-alike species
-   - De-duplicated sightings and removed low-quality or ambiguous labels
+## Approach
 
-2. **Exploratory Analysis**
-   - Density maps of sightings by species and region
-   - Seasonal patterns (e.g., emergence peaks by month)
-   - Class imbalance analysis between invasive and native sets
+- **Data Engineering & Cleaning**
+  - Pulled observation metadata and geolocation from the iNaturalist API.
+  - Filtered and labeled target invasive species vs native look-alikes.
+  - Removed duplicates and low-quality/ambiguous records; aggregated observations into spatial grids and time steps.
 
-3. **Modeling – Spread Prediction**
-   - Aggregated sightings into spatial grids and time steps
-   - Built a hybrid **CNN–LSTM** model:
-     - CNN encodes spatial structure of observation grids
-     - LSTM models temporal dynamics (spread over time)
-   - Target: future presence intensity in each grid cell
+- **Analysis & Modeling**
+  - Conducted geospatial EDA: density maps, seasonal patterns, and class imbalance diagnostics.
+  - Designed a hybrid **CNN–LSTM** architecture:
+    - CNN encodes spatial structure of each grid snapshot.
+    - LSTM models temporal dynamics of spread across time steps.
+  - Trained and evaluated models with train/validation/test splits, focusing on geographic error metrics.
 
-4. **Evaluation**
-   - Train / validation / test split: 60 / 20 / 20
-   - Metrics:
-     - Mean Squared Error
-     - Mean geographic error (km) between predicted and actual centroids
-     - 95th-percentile error bounds for latitude and longitude
+---
 
 ## Key Findings
 
-- For species with rich observation histories (e.g., Asian Lady Beetle), the model achieves **geographic mean errors on the order of tens of kilometers**, with tight 95th-percentile bounds.
-- For sparse species (e.g., Emerald Ash Borer), errors are larger, highlighting where additional monitoring data would most improve forecasts.
-- Spatial error maps and confidence ellipses help visualize **where predictions are reliable vs uncertain**, providing actionable guidance to conservation teams.
+- For species with rich observation histories, the model achieves **geographic mean errors on the order of tens of kilometers**, with relatively tight 95th-percentile error bounds.
+- For sparsely observed species, errors increase, clearly showing where new survey data would most improve forecasts.
+- Spatial error maps and confidence regions help distinguish **high-confidence vs low-confidence** areas, making it easier for agencies to prioritize field work.
+- The overall pipeline is reusable: new species and updated observations can be plugged into the same framework.
 
-## Decision-Support Value
+---
 
-- Prioritize survey and treatment resources to high-risk cells where the model predicts imminent spread.
-- Identify data-poor regions where additional sampling would most reduce uncertainty.
-- Provide a repeatable framework to plug in new species and updated observations.
+## Skills Demonstrated
 
-## What I Did as a Data Analyst
-
-- Translated a broad conservation problem into concrete forecasting questions
-- Designed the data schema for spatio-temporal modeling from raw citizen-science data
-- Performed geospatial EDA and communicated patterns via maps and plots
-- Implemented, tuned, and interpreted a deep learning model in the context of real-world conservation decisions
+- **Geospatial Data Handling** – using GeoPandas and spatial grid aggregation to prepare spatio-temporal datasets.
+- **Exploratory Geospatial Analysis** – density plots, seasonal trend analysis, and interpretation of class imbalance.
+- **Deep Learning for Time & Space** – implementing and tuning a CNN–LSTM model for spatial–temporal prediction.
+- **Evaluation Design** – using geographic error metrics and percentile error bounds to assess model usefulness for field decisions.
+- **Applied Environmental Analytics** – translating model performance into actionable insights for conservation and monitoring strategy.
