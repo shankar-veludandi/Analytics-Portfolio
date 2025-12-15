@@ -39,8 +39,8 @@ This project asks:
 
 If you only have a few minutes, I recommend:
 
-1. Download and open the [Power BI report](./powerbi/NYC& BOS Rental Market Analysis.pbix) to check out the rental market overview and rental finder dashboards.  
-2. Download and skim the [PowerPoint slide deck](./docs/Boston & NYC Rental Market Insights.pptx) to view the business story and insights.  
+1. Download and open the [Power BI dashboard](./powerbi/NYC%20&%20BOS%20Rental%20Market%20Analysis.pbix) to check out the rental market overview and rental finder dashboards.  
+2. Download and skim the [PowerPoint presentation](./docs/Boston%20&%20NYC%20Rental%20Market%20Insights.pptx) to view the business story and insights.  
 3. Glance at the Python and SQL scripts to see how data is fetched from APIs and cleaned and transformed into tables ready for data analysis.
 
 This project proves I can turn messy real-world data into insights and narratives that help renters based in Boston and New York City make better decisions about where to live.
