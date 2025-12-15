@@ -1,85 +1,64 @@
 # NBA Trade Market Dynamics & Team Success
 
-**Type:** Sports Business Analytics · Panel Data · Predictive Modeling  
+Sports business analytics project exploring how teams’ use of cap space, luxury tax room, and cash relates to next-season performance and playoff qualification.
+
+**Type:** Sports Analytics · Panel Data · Predictive Modeling  
 **Tech:** R, Python, Web Scraping, PCA, Regression, Classification
 
-## Project Overview
+---
 
-NBA front offices constantly balance two goals: staying under complex salary‐cap and luxury‐tax rules while building a roster that can compete for the playoffs. This project asks:
+## Business Problem
 
-> Do teams that use their salary cap, luxury tax room, and cash more efficiently actually perform better in the following season?
+NBA front offices operate under strict salary cap and luxury tax rules while trying to assemble playoff-caliber rosters. Decision-makers want to know whether **how** they use cap and cash actually translates into better on-court results.
 
-Using 10 seasons of NBA financial and performance data, I built a team–season panel, engineered “financial utilization” metrics, and tested how well they explain next-year performance and playoff qualification.
+This project asks:
 
-## Key Business Questions
+- How are teams using cap space, tax room, and cash relative to the thresholds set by the CBA?
+- Are there recognizable patterns in financial behavior over time (e.g., consistently aggressive tax spenders)?
+- Does “smarter” financial utilization help predict next-season performance and playoff appearances?
 
-1. How are teams *actually* using cap space, tax room, and cash relative to the thresholds set by the CBA?
-2. Are there patterns in financial behavior (e.g., consistently aggressive tax spenders) over time?
-3. Does higher or “smarter” financial utilization predict:
-   - A higher composite performance score (efficiency metrics),
-   - A higher probability of making the playoffs?
+---
 
-## Data & Sources
+## Data & Scope
 
-- **Seasons:** 2012–13 to 2023–24
-- **Performance data:** Team-level advanced metrics from the official NBA Stats API
-- **Financial data:** Team salaries, cap, luxury tax, and cash spending scraped from Spotrac
-- **Panel size:** 360 team-season rows after cleaning and lagging predictors
+- **Seasons:** 2012–13 through 2023–24  
+- **Performance data:** Team-level advanced metrics from the official NBA Stats API  
+- **Financial data:** Team salaries, cap, luxury tax, and cash spending scraped from Spotrac  
+- **Granularity:** Team–season panel (one row per team per season)  
+- **Scale:** 360 team-seasons after cleaning and lagging predictors
 
-All data is merged for each team and season, with franchise name changes reconciled via a custom lookup table.
+---
 
-## Analytics Approach
+## Approach
 
-1. **Data Engineering**
-   - Normalized team IDs and season keys across NBA and Spotrac sources
-   - Derived 5 financial utilization ratios:
-     - Cap utilization
-     - Tax utilization
-     - Cash utilization
-     - Average annual contract value (AAV) utilization
-     - Off-season spending utilization
-   - Lagged all financial features by one season to avoid leakage and mimic real-world decision making.
+- **Data Engineering & Cleaning**
+  - Scraped and normalized financial data from Spotrac and aligned it with NBA Stats performance data.
+  - Reconciled team name changes and relocations via a custom lookup table to maintain consistent franchise IDs.
+  - Engineered five financial utilization ratios (cap, tax, cash, average annual contract value, off-season spending) and lagged them one season to avoid leakage.
 
-2. **Exploratory Analysis**
-   - Distribution plots of utilization ratios and composite performance
-   - Season-over-season trends in league-wide utilization
-   - Correlation analysis between financial metrics and performance index
+- **Analysis & Modeling**
+  - Conducted exploratory analysis on distributions and trends of utilization ratios and performance metrics.
+  - Used **Principal Component Analysis (PCA)** to reduce multiple performance metrics into a single interpretable index (Performance PC1).
+  - Modeled next-season outcomes using:
+    - Pooled OLS, fixed-effects regression, LASSO, and Random Forest for the continuous performance index.
+    - Logistic regression and Random Forest for playoff vs non-playoff classification.
+  - Evaluated models using RMSE, R², and ROC–AUC, with out-of-sample validation.
 
-3. **Dimensionality Reduction**
-   - Principal Component Analysis (PCA) on 5 efficiency metrics to create a single **Performance PC1** index
-   - PC1 explains ~56% of total variance and serves as the main continuous outcome.
-
-4. **Modeling**
-   - **Regression (continuous outcome – Performance PC1)**
-     - Pooled OLS
-     - Team fixed-effects model
-     - LASSO regression for feature selection
-     - Random Forest regression as a nonlinear benchmark
-   - **Classification (binary outcome – Playoffs vs. No Playoffs)**
-     - Logistic regression
-     - Random Forest classifier
-   - Evaluation metrics:
-     - RMSE and R² for regression
-     - ROC–AUC for playoff classification
-     - Out-of-sample validation using train/test splits
+---
 
 ## Key Findings
 
-- Cap and cash utilization show the strongest positive relationship with next-season performance; most other ratios have weaker or noisy effects.
-- LASSO keeps only a small subset of utilization metrics, suggesting that more spending is not always better; *where* and *how* teams spend matters more than raw totals.
-- Across model families, predictive power for next-season performance is modest, and playoff classification is only slightly better than chance. Financial “savvy” alone cannot explain success—talent evaluation and coaching still dominate.
+- Cap and cash utilization show the clearest positive relationship with next-season performance; other ratios have weaker or noisier effects.
+- LASSO and fixed-effects models retain only a subset of financial variables, suggesting that **where and how** teams spend matters more than raw totals.
+- Predictive power for both performance and playoff qualification is **modest**, indicating that financial behavior alone cannot explain success—talent evaluation, coaching, and injuries remain major drivers.
+- The utilization framework is still valuable as an **early warning system** for extreme under- or over-spending relative to league norms.
 
-## Takeaways for Stakeholders
+---
 
-- Front offices can treat these utilization ratios as **early warning indicators**, not hard rules: extreme under-spending or over-spending (relative to peers) rarely translates into outsized performance.
-- The framework can be extended by adding player-level data (age, minutes, contract structure) to better understand *who* is being paid, not just *how much*.
+## Skills Demonstrated
 
-## What I Did as a Data Analyst
-
-- Designed business-style questions in collaboration with sports‐economics literature
-- Built a reproducible data pipeline (scraping, cleaning, and joining multi-source data)
-- Performed EDA and PCA to construct interpretable performance indices
-- Implemented and compared several regression and classification models
-- Translated model results into concrete recommendations and limitations for decision-makers
-
-[R Markdown file](https://shankar-veludandi.github.io/ITWS_6600/DataAnalytics_A4_Shankar_Veludandi.html)
+- **Data Engineering (R & Python)** – web scraping, normalizing multi-source sports data, building a reproducible team–season panel.
+- **Feature Engineering** – creation of meaningful financial utilization ratios and lagged predictors.
+- **Statistical Modeling** – PCA, OLS and fixed-effects regression, LASSO regularization, and classification models for playoff prediction.
+- **Model Evaluation** – use of RMSE, R², and ROC–AUC with clear comparisons across model families.
+- **Business Interpretation** – translating statistical results into guidance on how front offices can use financial metrics as diagnostics rather than one-shot decision rules.
