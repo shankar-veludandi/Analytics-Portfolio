@@ -1,70 +1,66 @@
 # AskReddit Engagement Analytics
 
+Social media analytics project analyzing how the wording and timing of r/AskReddit question titles relate to engagement, measured by comment volume.
+
 **Type:** Social Media Analytics · Text Mining · Classification  
 **Tech:** Python, PRAW, scikit-learn, spaCy, NLTK, Matplotlib/Seaborn
 
-## Project Overview
+---
 
-Content teams often ask: *What makes a post “take off” and drive conversation?*  
+## Business Problem
 
-This project analyzes r/AskReddit posts to understand how the **wording and timing** of a question relate to community engagement. I build a classifier to distinguish **high-engagement** vs **low-engagement** threads and use it to diagnose which features—language, sentiment, or posting time—matter most.
+Content and community teams often ask: *What makes a post “take off” and drive conversation?* They need a framework that goes beyond gut feeling to understand which aspects of a question—language, sentiment, or timing—most influence engagement.
 
-## Business Questions
+This project asks:
 
-1. Which linguistic patterns in question titles are associated with high comment volume?
-2. Does sentiment (positive, negative, neutral) impact engagement?
-3. How much do timing factors (day of week, time of day) contribute compared with wording?
+- Which linguistic patterns in question titles are associated with high comment volume?
+- Does sentiment (positive, negative, neutral) impact engagement?
+- How much do timing factors (day of week, time of day) contribute compared with wording?
 
-## Data
+---
 
-- **Source:** r/AskReddit subreddit via PRAW (Python Reddit API Wrapper)
-- **Scope:** 500 “hot” threads; 13,315 question titles with:
-  - Comment counts (engagement proxy)
-  - Timestamps
-- **Labeling:**
-  - Posts with comment counts above the median → **High engagement**
-  - Posts at or below median → **Low engagement**
+## Data & Scope
+
+- **Source:** r/AskReddit via the Reddit API (PRAW)  
+- **Scope:** 500 “hot” threads; 13,315 question titles  
+- **Features collected:** Comment counts, timestamps, raw title text  
+- **Labeling:**  
+  - Above-median comment count → **High engagement**  
+  - At or below median → **Low engagement**  
 - **Split:** 80% train / 20% test
 
-## Feature Engineering
+---
 
-1. **Text features**
-   - TF–IDF vectors over unigrams and bigrams
-   - Part-of-Speech tag counts (e.g., interrogatives, pronouns)
-   - Readability and structure: title length, average word length, presence of question mark
-2. **Sentiment features**
-   - Compound score from NLTK’s `SentimentIntensityAnalyzer`
-3. **Temporal features**
-   - Day of week (Mon–Sun)
-   - Hour-of-day bucket (morning / afternoon / evening / night)
+## Approach
 
-## Modeling Approach
+- **Data Engineering & Cleaning**
+  - Built a scraping pipeline using PRAW to collect titles, timestamps, and engagement counts.
+  - Cleaned and normalized text (tokenization, case-folding, punctuation removal) and filtered out obviously malformed entries.
 
-- **Model:** Support Vector Machine (RBF kernel) using scikit-learn’s `SVC`
-- **Tuning:** `GridSearchCV` over C and gamma
-- **Evaluation metrics:**
-  - Accuracy
-  - Precision, recall, F1 for each engagement class
-  - Confusion matrix
+- **Analysis & Modeling**
+  - Engineered features:
+    - TF–IDF over unigrams and bigrams.
+    - Structural features (title length, average word length, presence of question marks).
+    - Sentiment score using NLTK’s `SentimentIntensityAnalyzer`.
+    - Temporal features: day-of-week and hour-of-day buckets.
+  - Trained a **Support Vector Machine (RBF kernel)** classifier with `GridSearchCV` for hyperparameter tuning.
+  - Evaluated with accuracy, precision/recall/F1 by class, and confusion matrix analysis.
 
-## Results & Insights
+---
 
-- Overall test accuracy around **82%**, with strong performance on low-engagement posts.
-- High recall on low-engagement threads (≈92%) shows the model is good at flagging questions that are unlikely to spark conversation.
-- High-engagement recall (~64%) indicates the model can identify many strong candidates but still misses some “viral” outliers.
-- Linguistic and sentiment features contribute more signal than time-of-day alone, suggesting **how you ask** matters more than **when you ask**.
+## Key Findings
 
-## Practical Applications
+- The model achieves **~82% test accuracy**, with especially high recall (~92%) on low-engagement posts—useful for flagging questions unlikely to generate conversation.
+- High-engagement recall (~64%) shows the model can surface many strong candidate titles but still misses some “viral” outliers.
+- Linguistic and sentiment features provide more predictive signal than timing alone, suggesting that **how you ask** matters more than **when you ask**.
+- The feature framework can be used to pre-score draft titles and support A/B testing of alternative phrasings.
 
-- Editorial teams can:
-  - Use similar features to score draft question titles before posting.
-  - A/B test alternative phrasings while holding timing constant.
-  - Build dashboards that track engagement drivers over time.
+---
 
-## What I Did as a Data Analyst
+## Skills Demonstrated
 
-- Designed the engagement labeling strategy (median-based threshold)
-- Built a full scraping and cleaning pipeline from the Reddit API
-- Engineered and interpreted text, sentiment, and temporal features
-- Evaluated and documented model trade-offs, especially precision vs recall for high-engagement posts
-- Translated technical findings into simple guidelines for content strategy
+- **API-Based Data Collection** – scraping Reddit data with PRAW and handling rate limits and pagination.
+- **Text Preprocessing & Feature Engineering** – TF–IDF representations, structural features, and sentiment scoring.
+- **Supervised Learning** – SVM classifier with cross-validated hyperparameter tuning.
+- **Model Evaluation & Diagnostics** – interpreting precision/recall trade-offs for high vs low engagement segments.
+- **Business Storytelling** – converting model insights into actionable recommendations for content and community strategy.
