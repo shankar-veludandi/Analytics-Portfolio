@@ -1,69 +1,67 @@
 # Predicting Molecular Biodegradability for ChemsRUs
 
+Applied predictive analytics project reframing a Codalab biodegradability competition as a consulting engagement for a fictional client, **ChemsRUs**.
+
 **Type:** Applied Predictive Analytics · Feature Selection · Model Comparison  
 **Tech:** R, caret, glmnet, e1071, tidyverse
 
-## Business Context
+---
 
-ChemsRUs participates in a Codalab challenge to predict whether new chemical compounds are **biodegradable** or **non-biodegradable**. Their internal baseline uses logistic regression with p-value-based feature selection, but performance on the leaderboard suggests that the approach is leaving accuracy on the table.
+## Business Problem
 
-This project acts as a consulting engagement for ChemsRUs:
+ChemsRUs needs to predict whether new chemical compounds are **biodegradable** or **non-biodegradable** to prioritize R&D and manage environmental risk. Their internal baseline uses logistic regression with p-value-based feature selection and underperforms on the challenge leaderboard.
 
-> Can we design a more robust modeling and feature-selection pipeline that improves AUC on the challenge test set while identifying which molecular descriptors truly matter?
+This project asks:
 
-## Data
+- Can we build a more robust modeling and feature-selection pipeline to improve predictive performance?
+- Which molecular descriptors actually drive biodegradability, and how many do we need?
+- How should ChemsRUs balance interpretability and AUC when choosing a “production” model?
 
-- **Source:** ChemsRUs Codalab biodegradability challenge
-- **Rows:** 1,055 training compounds + external test set
-- **Features:** 168 molecular descriptors (X0–X167)
+---
+
+## Data & Scope
+
+- **Source:** ChemsRUs Codalab biodegradability challenge dataset  
+- **Rows:** 1,055 training compounds + external test set  
+- **Features:** 168 molecular descriptors (X0–X167)  
 - **Target:** Binary label  
   - `1` = biodegradable  
-  - `-1` = non-biodegradable
-- **Split:** 90% train / 10% validation (fixed seed for reproducibility)
+  - `-1` = non-biodegradable  
+- **Split:** 90% train / 10% validation with fixed seed for reproducibility
 
-## Analytical Approach
+---
 
-1. **Baseline Models (All Features)**
-   - Logistic Regression
-   - SVM with radial kernel
-   - Metrics: balanced accuracy and ROC–AUC on validation
+## Approach
 
-2. **Feature Selection Strategies**
-   - **Recursive Feature Elimination (RFE)**
-     - SVM-based RFE to identify the top ~40 descriptors
-   - **L1-Regularized Logistic Regression (Lasso)**
-     - Penalized model to shrink unimportant coefficients to zero
+- **Baseline Modeling**
+  - Trained logistic regression and SVM with radial kernel on all 168 features.
+  - Evaluated models using balanced accuracy and ROC–AUC on the validation set.
 
-3. **Retraining on Reduced Feature Sets**
-   - Re-fit LR and SVM models using:
-     - RFE-selected features
-     - L1-selected features
-   - Compare performance against the 168-feature baseline.
+- **Feature Selection**
+  - Applied **Recursive Feature Elimination (RFE)** with an SVM base learner to identify a compact set (~40) of high-signal descriptors.
+  - Trained **L1-regularized logistic regression (Lasso)** to shrink uninformative coefficients to zero and compare its selected feature set.
 
-4. **Model Selection & Final Submission**
-   - Choose the model that optimizes validation AUC and balanced accuracy.
-   - Generate predictions for the Codalab test set and submit as ChemsRUs’ improved entry.
+- **Refinement & Model Selection**
+  - Re-trained LR and SVM models on:
+    - RFE-selected features.
+    - L1-selected features.
+  - Compared performance to the full-feature baseline and chose the final model for Codalab submission.
 
-## Key Results
+---
 
-- Both LR and SVM improve when trained on a reduced feature set rather than all 168 descriptors.
-- The **SVM + RFE (40 features)** model delivers the best trade-off, achieving:
-  - Higher balanced accuracy on the validation set
-  - A strong AUC score on the external test set
-- L1-regularized models help interpret which descriptors drive biodegradability, even when their predictive performance is slightly lower.
+## Key Findings
 
-## Insights for ChemsRUs
+- Both logistic regression and SVM perform **better on a reduced feature set** than on all 168 descriptors, demonstrating the value of feature selection.
+- The **SVM + RFE (~40 features)** model delivers the best balance of balanced accuracy and AUC on the validation set and is chosen as the final submission.
+- L1-regularized models, even when slightly behind in raw AUC, provide a clearer view of which descriptors are most influential for biodegradability.
+- P-value-based feature selection used in the original baseline is less stable and less performant than modern regularization and RFE methods.
 
-- Feature selection meaningfully improves model stability and generalization.
-- A small subset of descriptors contains most of the signal, which can:
-  - Guide future experimental design (which properties to measure)
-  - Simplify internal scoring tools for new compounds
-- P-value-based selection in the original baseline is not sufficient; modern regularization and RFE yield more reliable results.
+---
 
-## What I Did as a Data Analyst
+## Skills Demonstrated
 
-- Re-framed a Kaggle-style challenge into a client-oriented analytics engagement
-- Implemented multiple feature-selection strategies using `caret` and `glmnet`
-- Compared models using consistent validation splits and metrics
-- Documented trade-offs between interpretability and raw AUC
-- Produced a recommendation for ChemsRUs’ “production” model and feature set
+- **Statistical Modeling in R** – building and tuning logistic regression and SVM models using `caret` and `e1071`.
+- **Feature Selection Techniques** – implementing and comparing RFE and L1 regularization to reduce dimensionality.
+- **Model Evaluation** – using balanced accuracy and ROC–AUC with a controlled validation split for fair comparison.
+- **Trade-off Analysis** – weighing interpretability versus predictive performance when recommending a “production” model.
+- **Client-Oriented Framing** – translating a competition setting into a practical consulting narrative for an R&D stakeholder.
