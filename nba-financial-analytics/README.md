@@ -62,3 +62,5 @@ This project asks:
 - **Statistical Modeling** – PCA, OLS and fixed-effects regression, LASSO regularization, and classification models for playoff prediction.
 - **Model Evaluation** – use of RMSE, R², and ROC–AUC with clear comparisons across model families.
 - **Business Interpretation** – translating statistical results into guidance on how front offices can use financial metrics as diagnostics rather than one-shot decision rules.
+
+[R Markdown file](https://shankar-veludandi.github.io/ITWS_6600/DataAnalytics_A4_Shankar_Veludandi.html)
