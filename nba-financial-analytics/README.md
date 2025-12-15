@@ -81,3 +81,5 @@ All data is merged for each team and season, with franchise name changes reconci
 - Performed EDA and PCA to construct interpretable performance indices
 - Implemented and compared several regression and classification models
 - Translated model results into concrete recommendations and limitations for decision-makers
+
+[R Markdown file](https://shankar-veludandi.github.io/ITWS_6600/DataAnalytics_A4_Shankar_Veludandi.html)
