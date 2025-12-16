@@ -1,4 +1,4 @@
-# NBA Trade Market Dynamics & Team Success
+# NBA Financial Analytics & Team Success
 
 Sports business analytics project exploring how teams’ use of cap space, luxury tax room, and cash relates to next-season performance and playoff qualification.
 
