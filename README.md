@@ -13,7 +13,7 @@ I also draw on my background in machine learning when predictive models add valu
 
 ## Projects
 
-### 🏠 Boston & NYC Rental Market Analytics
+### 🏠 [Boston & NYC Rental Market Analytics](./rental-market-analytics)
 
 **Type:** End-to-End BI / Market Analytics  
 **Tech:** Python, PostgreSQL, Power BI
@@ -28,7 +28,7 @@ See the project folder for the Power BI report, stakeholder slide deck, and full
 
 ---
 
-### 🏀 NBA Trade Market Dynamics & Team Success
+### 🏀 [NBA Trade Market Dynamics & Team Success](./nba-financial-analytics)
 
 **Type:** Sports Business Analytics · Panel Data  
 **Tech:** R, Python, web scraping, PCA, regression/classification
@@ -41,7 +41,7 @@ Analyzes whether NBA teams that use cap space, luxury-tax room, and cash more ef
 
 ---
 
-### 💬 AskReddit Engagement Analytics
+### 💬 [AskReddit Engagement Analytics](./reddit-engagement-analytics)
 
 **Type:** Social Media / Content Analytics  
 **Tech:** Python, PRAW, scikit-learn, spaCy, NLTK
@@ -54,7 +54,7 @@ Studies what makes r/AskReddit questions high vs low engagement based on wording
 
 ---
 
-### 🐞 Invasive Insect Analytics
+### 🐞 [Invasive Insect Analytics](./invasive-insect-analytics)
 
 **Type:** Environmental / Spatio-Temporal Analytics  
 **Tech:** Python, TensorFlow/Keras, GeoPandas
@@ -67,7 +67,7 @@ Distinguishes invasive insect species from native look-alikes and forecasts thei
 
 ---
 
-### 🧪 ChemsRUs Biodegradability Analytics
+### 🧪 [ChemsRUs Biodegradability Analytics](./chemical-biodegradability-analytics)
 
 **Type:** Applied Predictive Analytics · Feature Selection  
 **Tech:** R, caret, glmnet, e1071, tidyverse
