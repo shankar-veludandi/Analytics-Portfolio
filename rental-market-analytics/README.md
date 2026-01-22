@@ -16,14 +16,11 @@ Insights and recommendations are provided across the following key areas:
 - Supply by borough and neighborhood  
 - Pricing tradeoffs (beds, pets, days on market)  
 
-The SQL queries used to inspect and clean the data for this analysis can be found here:  
-[`sql/`](sql/)
+The **SQL** queries used to inspect and clean the data for this analysis can be found [here](sql/)
 
-An interactive Power BI dashboard used to explore rental market trends can be found here:  
-[`powerbi/NYC & BOS Rental Market Analysis.pbix`](powerbi/NYC%20%26%20BOS%20Rental%20Market%20Analysis.pbix)
+An interactive **Power BI** dashboard used to explore rental market trends can be found [here](powerbi/NYC%20%26%20BOS%20Rental%20Market%20Analysis.pbix)
 
-A PowerPoint deck used to present key insights to stakeholders can be found here:  
-[`docs/Boston & NYC Rental Market Insights.pptx`](docs/Boston%20%26%20NYC%20Rental%20Market%20Insights.pptx)
+A **PowerPoint** deck used to present key insights to stakeholders can be found [here](docs/Boston%20%26%20NYC%20Rental%20Market%20Insights.pptx)
 
 ---
 
@@ -31,23 +28,17 @@ A PowerPoint deck used to present key insights to stakeholders can be found here
 
 The analytics layer is modeled using a **star schema** optimized for BI performance, clarity, and extensibility.
 
-![Star Schema ERD](docs/erd.png)
+<p align="center">
+  <img src="docs/erd.png" width="700">
+</p>
 
-**Core tables:**
+- **fact_listings**: One row per active listing, containing rent, square footage, list date, last updated timestamp, and geospatial coordinates.
 
-- **fact_listings**  
-  One row per active listing, containing rent, square footage, list date, last updated timestamp, and geospatial coordinates.
+- **dim_geography**: City, borough, neighborhood, ZIP code, and NTA mappings used for consistent geographic rollups.
 
-- **dim_geography**  
-  City, borough, neighborhood, ZIP code, and NTA mappings used for consistent geographic rollups.
+- **dim_unit**: Standardized bed/bath combinations to support unit-level comparisons.
 
-- **dim_unit**  
-  Standardized bed/bath combinations to support unit-level comparisons.
-
-- **dim_pet_policy**  
-  Normalized pet policy categories (cats allowed, dogs allowed).
-
-This structure allows the Power BI semantic model to remain clean while supporting flexible slicing by geography, unit size, and renter constraints.
+- **dim_pet_policy**: Normalized pet policy categories (cats allowed, dogs allowed).
 
 ---
 
@@ -55,9 +46,9 @@ This structure allows the Power BI semantic model to remain clean while supporti
 
 The pipeline follows a layered warehouse pattern with clear lineage from ingestion to analytics consumption.
 
-![Pipeline Architecture](docs/pipeline.png)
-
-**Flow overview:**
+<p align="center">
+  <img src="docs/pipeline.png">
+</p>
 
 - **Ingestion:** Python ETL pulls active listings from Realtor and Redfin.
 - **Raw layer:** Source-aligned landing tables store unmodified listings.
@@ -65,82 +56,66 @@ The pipeline follows a layered warehouse pattern with clear lineage from ingesti
 - **Analytics layer:** Curated Boston and NYC outputs are unioned into a single contract table with a `last_updated` timestamp.
 - **Consumption:** Power BI connects to the analytics table via a star schema model.
 
-This design mirrors production analytics workflows used by data and analytics teams.
-
 ---
 
 ## Executive Summary
 
 This analysis compares current-state rental conditions in Boston and New York City using a weekly snapshot of active listings. While NYC has more total inventory, renters face meaningfully higher prices, greater geographic concentration, and fewer affordable options at common budget levels.
 
-![KPI Summary](docs/KPI_summary.png)
+<p align="center">
+  <img src="docs/KPI_summary.png" width="700">
+</p>
+<p align="center">
+  <em>Data derived from a snapshot of ~9K Boston listings and ~12K NYC listings, last updated 12/08/2025.</em>
+</p>
 
-*Data derived from a snapshot of ~9K Boston listings and ~12K NYC listings, last updated 12/17/2025.*
-
-**Key takeaways:**
-
-- **Price:** NYC’s median rent is **34% higher**, and 1–3 bedroom units (which represent nearly all NYC supply) are **40–60% more expensive** than in Boston.
-- **Supply distribution:** NYC listings are heavily concentrated in **Manhattan and Brooklyn**, while Boston inventory clusters across a small number of high-activity neighborhoods.
-- **Affordability:** At a **$1.5K monthly budget**, Boston offers **~3× more viable listings** than NYC, resulting in substantially greater geographic flexibility.
+- **Price:** NYC’s median rent is **34% higher**, and 1–3 bedroom units are **40–60% more expensive** than in Boston.
+- **Supply:** NYC listings are heavily concentrated in **Manhattan and Brooklyn** and over half of Boston listings cluster in 5 neighborhoods.
+- **Affordability:** At a **$1.5K monthly budget**, Boston offers **3× more affordable listings** than NYC.
 
 ---
 
 ## Insights Deep Dive
 
-This section expands on the Executive Summary by examining **price dynamics**, **distribution of supply**, and **practical affordability** in greater detail. Each insight pairs analysis with a targeted visual to support renter-relevant conclusions.
-
----
-
 ### 1. Price: NYC Commands a Large Premium Across All Common Unit Sizes
 
-NYC rents are consistently higher than Boston rents at every comparable bedroom size, with the gap widening as unit size increases. Although NYC’s median rent is **34% higher overall**, 1–3 bedroom units are **40–60% more expensive**, representing nearly the entirety of NYC’s housing supply.
+NYC’s median rent is **34% higher overall** and 1–3 bedroom units are **40–60% more expensive**, representing all of NYC’s housing supply.
 
-![Listings and Median Rent by Bedrooms](docs/clustered_column_and_line_chart.png)
-
-**Key observations:**
+<p align="center">
+  <img src="docs/clustered_column_and_line_chart.png" alt="Listings and Median Rent by Bedrooms" width="700">
+</p>
 
 - NYC **3BR units** have a similar median rent to **Boston 5BR units**, highlighting a significant space-for-price tradeoff.
 - NYC inventory skews toward studios and 1BRs, while Boston includes more multi-bedroom units that moderate per-bedroom costs.
 - Higher NYC pricing persists despite greater total listing counts, indicating that price differences are not driven by inventory volume alone.
 
-**Why it matters:**  
-Renters face structurally different cost environments. In NYC, higher rents are unavoidable across typical unit sizes, while Boston offers more flexibility for shared housing and larger-unit tradeoffs.
-
 ---
 
 ### 2. Distribution of Supply: Listings Cluster in Distinct Ways Across Cities
 
-Although NYC has more active listings, its inventory is concentrated at the borough level, whereas Boston’s supply clusters across a small set of neighborhoods that function as distinct rental submarkets.
+Although NYC has more active listings, its inventory is concentrated at the borough level, whereas over half of Boston’s supply clusters across 5 neighborhoods. While boroughs and neighborhoods are not directly comparable, both cities exhibit **geographic concentration that shapes renter choice**.
 
-![NYC Borough Supply](docs/nyc_borough_listings_distribution.webp)
+<p align="center">
+  <img src="docs/bos_nyc_supply.png" width="700">
+</p>
 
-![Boston Neighborhood Supply](docs/boston_neighborhood_listings_distribution.webp)
-
-**Key observations:**
-
-- **NYC:** ~85% of listings are in Manhattan and Brooklyn; Manhattan alone drives citywide pricing.
 - **Boston:** Over one-third of listings are in Allston and Brighton, with 60% concentrated in five neighborhoods.
+- **NYC:** ~85% of listings are in Manhattan and Brooklyn; Manhattan alone drives citywide pricing.
 - Premium areas in both cities often exhibit high median rent but lower $/bed due to larger unit sizes.
-
-**Why it matters:**  
-While boroughs and neighborhoods are not directly comparable administrative units, both cities exhibit **geographic concentration that shapes renter choice**, competition, and pricing pressure.
 
 ---
 
-### 3. Affordability: Boston Offers Far More Viable Options at a $1.5K Budget
+### 3. Affordability: Boston Offers Far More Viable Options on a $1.5K Monthly Budget
 
-Applying a practical affordability lens reveals stark differences in renter flexibility.
+The median salary for an associate data analyst in Boston & NYC is **$80K annually**. The maximum monthly budget recommended to spend on rent is 30% of your annual income after tax, or **$1.5K** in this case. Given that budget, Boston provides more geographic flexibility and housing choice, while finding affordable listings in NYC requires searching outside of Manhattan and Brooklyn.
 
-![Affordability Comparison Maps](docs/affordable_listings_count.webp)
-
-**Key observations:**
+<p align="center">
+  <img src="docs/affordability_heat_maps.png" width="700">
+</p>
 
 - Boston has **~3× more affordable listings** than NYC at a $1.5K rent threshold.
 - NYC affordability is largely confined to outer boroughs such as Queens, Staten Island, and the Bronx.
 - Boston’s affordable listings are more geographically distributed across Dorchester, Mattapan, Roxbury, Roslindale, and Hyde Park.
-
-**Why it matters:**  
-For renters earning around **$80K annually**, Boston provides substantially more geographic flexibility and housing choice, while NYC affordability often requires accepting tighter location constraints.
 
 ---
 
