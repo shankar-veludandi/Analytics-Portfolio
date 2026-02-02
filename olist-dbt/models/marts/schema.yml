@@ -1,0 +1,194 @@
+version: 2
+
+models:
+  - name: fct_order_financials
+    description: >
+      Order-level financial rollup combining item-level revenue and payment totals.
+      gross_order_value is defined as SUM(price) + SUM(freight_value) from order items (GMV-style measure).
+
+      Grain: one row per order_id.
+
+      Primary use case: serves as the canonical “order economics” fact table for AOV/GMV, revenue reconciliation,
+      and as a reusable base for downstream KPI marts.
+
+      Primary users: analytics engineers/data engineers (as a reusable fact layer), data analysts (for KPI building and QA),
+      and BI consumers (Excel dashboards) via downstream marts derived from this fact.
+    columns:
+      - name: order_id
+        description: "Unique order identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Customer identifier for the order; joins to stg_customers.customer_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+  - name: mart_kpis_weekly
+    description: >
+      Weekly KPI summary (volume, revenue, and operational status mix).
+      Includes rates as fractions (0–1) and rolling 4-week averages to smooth volatility.
+
+      Grain: one row per week_start.
+
+      Primary use case: executive-style weekly trend reporting (orders, AOV/GMV, delivered/canceled mix),
+      and stable time-series inputs for Excel charts and weekly scorecards.
+
+      Primary users: business/data analysts (trend monitoring + dashboarding) and stakeholders (high-level weekly performance review).
+    columns:
+      - name: week_start
+        description: "Week start date (DATE_TRUNC('week', order_purchase_timestamp)::DATE)."
+        tests:
+          - not_null
+          - unique
+
+      - name: orders
+        description: "Count of orders in the week."
+        tests:
+          - not_null
+
+  - name: mart_kpis_monthly
+    description: >
+      Monthly KPI summary focused on order volume and AOV, including month-over-month AOV change.
+
+      Grain: one row per month_start.
+
+      Primary use case: monthly performance tracking and seasonality analysis at a higher aggregation level than weekly KPIs;
+      supports MoM comparisons and monthly reporting views in Excel.
+
+      Primary users: business/data analysts and stakeholders who consume monthly summaries (monthly reviews, lightweight planning, reporting).
+    columns:
+      - name: month_start
+        description: "Month start date (DATE_TRUNC('month', order_purchase_timestamp)::DATE)."
+        tests:
+          - not_null
+          - unique
+
+      - name: orders
+        description: "Count of distinct orders in the month."
+        tests:
+          - not_null
+
+  - name: mart_cohorts_monthly
+    description: >
+      Monthly cohort retention table based on customer_unique_id.
+      cohort_month is the customer's first purchase month; month_index is months since cohort_month.
+
+      Grain: one row per (cohort_month, month_index).
+
+      Primary use case: cohort retention analysis (repeat engagement over time) and building cohort heatmaps/curves
+      in Excel or BI tools without re-deriving cohort logic.
+
+      Primary users: analytics engineers/data analysts performing retention/cohort analysis; stakeholders reviewing retention patterns at an aggregate level.
+    columns:
+      - name: cohort_month
+        description: "Customer cohort month (month of first purchase)."
+        tests:
+          - not_null
+
+      - name: month_index
+        description: "Months since cohort_month (0 = cohort month)."
+        tests:
+          - not_null
+
+      - name: active_customers
+        description: "Distinct active customers (customer_unique_id) in the cohort at the given month_index."
+        tests:
+          - not_null
+
+  - name: mart_category_weekly
+    description: >
+      Weekly merchandising performance by product category (typically aligned to delivered orders per model logic).
+      Enables category-level volume and economics trend analysis without joining line-item detail.
+
+      Grain: one row per (week_start, product_category_name).
+
+      Primary use case: category mix tracking and merchandising insight generation (which categories drive volume/revenue over time),
+      and category-specific trend visuals in Excel dashboards.
+
+      Primary users: data analysts (merchandising analysis) and stakeholders focused on assortment/category performance.
+    columns:
+      - name: week_start
+        description: "Week start date for the aggregation window."
+        tests:
+          - not_null
+
+  - name: mart_new_vs_returning_weekly
+    description: >
+      Weekly split of new vs returning customers using customer_unique_id sequencing.
+      new_customer_share is expressed as a fraction (0–1) and typically rounded to 4 decimals in the model.
+
+      Grain: one row per week_start.
+
+      Primary use case: acquisition vs retention mix tracking (how much of weekly demand is coming from first-time vs repeat customers),
+      supporting retention narrative and weekly performance context in Excel.
+
+      Primary users: data analysts and stakeholders monitoring customer health (acquisition/retention balance).
+    columns:
+      - name: week_start
+        description: "Week start date for the customer acquisition/retention split."
+        tests:
+          - not_null
+          - unique
+
+  - name: mart_geo_state_flows_weekly
+    description: >
+      Weekly seller_state -> customer_state flows and performance.
+      Provides a market-level view of commerce movement using state-level geography (no lat/long required).
+      aov_proxy is computed as revenue per distinct order for the flow; rates are represented as fractions (0–1) where applicable.
+
+      Grain: one row per (week_start, seller_state, customer_state).
+
+      Primary use case: state-to-state flow analysis (market sizing, routing/friction hypotheses, cross-region demand patterns),
+      and building geo-flow pivots/heatmaps in Excel.
+
+      Primary users: data analysts (market/geo analysis) and stakeholders interested in regional performance and origin→destination dynamics.
+    columns:
+      - name: week_start
+        description: "Week start date for the aggregation window."
+        tests:
+          - not_null
+
+      - name: seller_state
+        description: "Seller state (UF) for the order item / dominant flow grouping."
+        tests:
+          - not_null
+
+      - name: customer_state
+        description: "Customer state (UF) for the order item / flow grouping."
+        tests:
+          - not_null
+
+  - name: mart_experience_retention_90d
+    description: >
+      Retention outcome table linking first-order experience to repeat behavior within 90 days.
+      Built on each customer's first delivered order (order_num = 1 with delivered date present).
+      repeat_rate_90d is expressed as a fraction (0–1).
+
+      Grain: one row per (late_delivery, review_score).
+
+      Primary use case: experience → retention analysis (quantify how delivery timeliness and review sentiment correlate with 90-day repeat behavior),
+      enabling segmented retention views without rebuilding customer sequencing logic.
+
+      Primary users: data analysts (customer experience + retention storytelling) and stakeholders evaluating service quality impact on repeat purchasing.
+    columns:
+      - name: late_delivery
+        description: "Boolean indicator of whether first delivered order arrived after estimated delivery date."
+        tests:
+          - not_null
+
+      - name: customers
+        description: "Count of customers (customer_unique_id) in the segment."
+        tests:
+          - not_null
+
+      - name: repeat_rate_90d
+        description: >
+          Fraction of customers who placed another order within 90 days of their first delivered order.
+          Value range: 0–1.
+        tests:
+          - not_null

@@ -1,0 +1,179 @@
+version: 2
+
+models:
+  - name: stg_category_translation
+    description: >
+      Product category translation mapping from Portuguese category labels to English.
+      Grain: one row per product_category_name.
+    columns:
+      - name: product_category_name
+        description: "Portuguese product category label (source key)."
+        tests:
+          - not_null
+          - unique
+
+      - name: product_category_name_english
+        description: "English translation for the Portuguese product category label."
+        tests:
+          - not_null
+
+  - name: stg_customers
+    description: >
+      Customer attributes including customer_unique_id (stable identity) and customer_state.
+      Grain: one row per customer_id.
+    columns:
+      - name: customer_id
+        description: >
+          Customer surrogate identifier used in orders. Note: a single customer_unique_id
+          may map to multiple customer_id values over time in the Olist dataset.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_unique_id
+        description: >
+          Stable customer identifier representing the same real-world customer across multiple orders.
+          This is the recommended key for customer-level lifecycle analysis.
+        tests:
+          - not_null
+
+      - name: customer_state
+        description: "Customer state (UF), a 2-character Brazilian state abbreviation."
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: >
+      Order header-level fields including status and key lifecycle timestamps.
+      Grain: one row per order_id.
+    columns:
+      - name: order_id
+        description: "Unique order identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Customer identifier for the order; joins to stg_customers.customer_id."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: order_status
+        description: >
+          Current order status at extract time (e.g., delivered, canceled, shipped, invoiced).
+          Downstream marts may filter to delivered orders for revenue/experience analysis.
+        tests:
+          - not_null
+
+      - name: order_purchase_timestamp
+        description: >
+          Timestamp when the order was placed. Can be null for some raw rows; most
+          time-series marts filter out null purchase timestamps.
+
+  - name: stg_order_items
+    description: >
+      Order line items including product and seller identifiers.
+      Grain: one row per (order_id, order_item_id).
+    columns:
+      - name: order_id
+        description: "Order identifier; joins to stg_orders.order_id."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: order_item_id
+        description: "Line item sequence number within an order."
+        tests:
+          - not_null
+
+      - name: product_id
+        description: "Product identifier; joins to stg_products.product_id."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: seller_id
+        description: "Seller identifier; joins to stg_sellers.seller_id."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sellers')
+                field: seller_id
+
+  - name: stg_order_payments
+    description: >
+      Payment records for orders. An order may have multiple payment rows
+      (e.g., installments, multiple payment methods).
+      Grain: one row per (order_id, payment_sequential) in the raw data.
+    columns:
+      - name: order_id
+        description: "Order identifier; joins to stg_orders.order_id."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+  - name: stg_order_reviews
+    description: >
+      Order reviews. There may be multiple review rows per order in the raw data,
+      so downstream models may deduplicate to one review per order.
+      Grain: one row per (review_id, order_id) in the raw data.
+    columns:
+      - name: order_id
+        description: "Order identifier; joins to stg_orders.order_id."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: review_id
+        description: "Review identifier (not guaranteed to be unique without order_id in the raw)."
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: >
+      Product attributes including product category.
+      Grain: one row per product_id.
+    columns:
+      - name: product_id
+        description: "Unique product identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: product_category_name
+        description: >
+          Portuguese product category label. Can be null for some products.
+          Use stg_category_translation to map to English where available.
+
+  - name: stg_sellers
+    description: >
+      Seller attributes including seller_state.
+      Grain: one row per seller_id.
+    columns:
+      - name: seller_id
+        description: "Unique seller identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: seller_state
+        description: "Seller state (UF), a 2-character Brazilian state abbreviation."
+        tests:
+          - not_null

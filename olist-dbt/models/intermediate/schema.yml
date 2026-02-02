@@ -1,0 +1,125 @@
+version: 2
+
+models:
+  - name: int_order_reviews_one_row
+    description: >
+      One review row per order, deduplicated from stg_order_reviews / raw reviews.
+      Selection rule: keep the most recent review by review_answer_timestamp (DESC),
+      then review_creation_date (DESC), then review_id (DESC) as a stable tie-breaker.
+      Grain: one row per order_id.
+    columns:
+      - name: order_id
+        description: "Order identifier. Primary key for this intermediate review table."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: review_id
+        description: "Review identifier selected as the single representative review for the order."
+        tests:
+          - not_null
+
+  - name: int_orders_experience
+    description: >
+      Order-level experience features combining order lifecycle timestamps with the
+      deduplicated review record. Includes delivery timing metrics used for
+      experience-to-retention analyses.
+      Grain: one row per order_id.
+    columns:
+      - name: order_id
+        description: "Unique order identifier."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: customer_id
+        description: "Customer identifier associated with the order."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+  - name: int_order_items_enriched
+    description: >
+      Order items enriched with customer and seller geography (state) and product category.
+      Intended to support merchandising cuts and seller-to-customer geography flow analysis.
+      Grain: one row per (order_id, order_item_id).
+    columns:
+      - name: order_id
+        description: "Order identifier; joins to stg_orders.order_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: order_item_id
+        description: "Line item sequence number within an order."
+        tests:
+          - not_null
+
+      - name: customer_id
+        description: "Customer identifier; joins to stg_customers.customer_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+      - name: seller_id
+        description: "Seller identifier; joins to stg_sellers.seller_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_sellers')
+              field: seller_id
+
+      - name: product_id
+        description: "Product identifier; joins to stg_products.product_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+
+  - name: int_customer_order_sequence
+    description: >
+      Customer-level order sequencing for lifecycle analysis.
+      Orders are sequenced by order_purchase_timestamp then order_id within each customer_unique_id.
+      Grain: one row per order_id (with customer_unique_id attached).
+    columns:
+      - name: customer_unique_id
+        description: >
+          Stable customer identifier used as the partition key for sequencing and lifecycle metrics.
+          Recommended for cohorting and repeat-rate calculations.
+        tests:
+          - not_null
+
+      - name: order_id
+        description: "Order identifier included in the customer order sequence."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: order_num
+        description: >
+          1-based order sequence number for the customer_unique_id.
+          order_num = 1 indicates the customer's first observed order.
+        tests:
+          - not_null
+
+      - name: is_first_order_flag
+        description: "Binary flag: 1 if order_num = 1 else 0."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
