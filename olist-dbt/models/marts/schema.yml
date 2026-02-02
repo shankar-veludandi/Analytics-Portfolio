@@ -51,55 +51,6 @@ models:
         tests:
           - not_null
 
-  - name: mart_kpis_monthly
-    description: >
-      Monthly KPI summary focused on order volume and AOV, including month-over-month AOV change.
-
-      Grain: one row per month_start.
-
-      Primary use case: monthly performance tracking and seasonality analysis at a higher aggregation level than weekly KPIs;
-      supports MoM comparisons and monthly reporting views in Excel.
-
-      Primary users: business/data analysts and stakeholders who consume monthly summaries (monthly reviews, lightweight planning, reporting).
-    columns:
-      - name: month_start
-        description: "Month start date (DATE_TRUNC('month', order_purchase_timestamp)::DATE)."
-        tests:
-          - not_null
-          - unique
-
-      - name: orders
-        description: "Count of distinct orders in the month."
-        tests:
-          - not_null
-
-  - name: mart_cohorts_monthly
-    description: >
-      Monthly cohort retention table based on customer_unique_id.
-      cohort_month is the customer's first purchase month; month_index is months since cohort_month.
-
-      Grain: one row per (cohort_month, month_index).
-
-      Primary use case: cohort retention analysis (repeat engagement over time) and building cohort heatmaps/curves
-      in Excel or BI tools without re-deriving cohort logic.
-
-      Primary users: analytics engineers/data analysts performing retention/cohort analysis; stakeholders reviewing retention patterns at an aggregate level.
-    columns:
-      - name: cohort_month
-        description: "Customer cohort month (month of first purchase)."
-        tests:
-          - not_null
-
-      - name: month_index
-        description: "Months since cohort_month (0 = cohort month)."
-        tests:
-          - not_null
-
-      - name: active_customers
-        description: "Distinct active customers (customer_unique_id) in the cohort at the given month_index."
-        tests:
-          - not_null
-
   - name: mart_category_weekly
     description: >
       Weekly merchandising performance by product category (typically aligned to delivered orders per model logic).
@@ -190,5 +141,65 @@ models:
         description: >
           Fraction of customers who placed another order within 90 days of their first delivered order.
           Value range: 0–1.
+        tests:
+          - not_null
+
+  - name: mart_cohort_ltv_monthly
+    description: >
+      Monthly cohort retention and LTV table built on delivered orders only.
+      Cohorts are defined by each customer's first delivered order month (cohort_month).
+      month_index is the number of months since cohort_month (0 = acquisition month).
+
+      Grain: one row per (cohort_month, month_index).
+
+      Primary use case: cohort retention heatmaps and LTV curves (revenue per acquired customer and cumulative LTV over time),
+      enabling high-signal retention analysis in Excel dashboards.
+
+      Primary users: data analysts and stakeholders evaluating customer quality, retention dynamics, and revenue durability over time.
+    columns:
+      - name: cohort_month
+        description: "Customer acquisition cohort month (month of first delivered order)."
+        tests:
+          - not_null
+
+      - name: month_index
+        description: "Months since cohort_month (0 = cohort month)."
+        tests:
+          - not_null
+
+      - name: cohort_size
+        description: "Number of acquired customers in the cohort (active_customers at month_index = 0)."
+        tests:
+          - not_null
+
+      - name: active_customers
+        description: "Count of distinct active customers (customer_unique_id) in the cohort at the given month_index."
+        tests:
+          - not_null
+
+      - name: orders
+        description: "Count of delivered orders placed by cohort customers in the given month_index."
+        tests:
+          - not_null
+
+      - name: gross_revenue
+        description: "Sum of gross_order_value for delivered orders placed by cohort customers in the given month_index."
+        tests:
+          - not_null
+
+      - name: retention_rate
+        description: "Retention rate at month_index: active_customers / cohort_size. Expressed as a fraction (0–1)."
+        tests:
+          - not_null
+
+      - name: revenue_per_cohort_customer
+        description: "Gross revenue per acquired customer for the month_index: gross_revenue / cohort_size."
+        tests:
+          - not_null
+
+      - name: cumulative_revenue_per_cohort_customer
+        description: >
+          Cumulative gross revenue per acquired customer up to the given month_index.
+          Computed as cumulative SUM(gross_revenue) over month_index divided by cohort_size.
         tests:
           - not_null
