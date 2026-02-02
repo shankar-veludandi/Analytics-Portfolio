@@ -1,414 +1,230 @@
-```markdown
-
-\# Metrics
-
-
+# Metrics
 
 Conventions:
-
-\- \*\*Rates\*\* are expressed as fractions (0–1) unless explicitly stated otherwise.
-
-\- \*\*Time grain\*\* refers to the aggregation window for the metric (weekly, monthly, segment-level, etc.).
-
-\- If a metric is defined in a downstream mart but ultimately originates from `fct\_order\_financials`, that lineage is noted.
-
-
+- **Rates** are expressed as fractions (0–1) unless explicitly stated otherwise.
+- **Time grain** refers to the aggregation window for the metric (weekly, cohort-month by index, segment-level, etc.).
+- If a metric is defined in a downstream mart but ultimately originates from `fct_order_financials`, that lineage is noted.
 
 ---
 
-
-
-\## orders
-
-
-
-\- Definition: count of distinct orders in the time period.
-
-\- Source model: `mart\_kpis\_weekly`, `mart\_kpis\_monthly`
-
-\- Time grain: weekly (`week\_start`) or monthly (`month\_start`)
-
-\- Notes: typically counted as `COUNT(DISTINCT order\_id)`.
-
-
+## orders
+- Definition: count of distinct orders in the time period.
+- Source model: `mart_kpis_weekly`
+- Time grain: weekly (`week_start`)
+- Notes: typically counted as `COUNT(DISTINCT order_id)`.
 
 ---
 
-
-
-\## gross\_order\_value
-
-
-
-\- Definition: GMV-style order value, defined as item revenue plus freight.
-
-\- Source model: `fct\_order\_financials`
-
-\- Time grain: order-level (no time aggregation)
-
-\- Notes: computed as `SUM(price) + SUM(freight\_value)` over order items for a given `order\_id`. Use this as the canonical “order economics” numerator for revenue-style KPIs.
-
-
+## gross_order_value
+- Definition: GMV-style order value, defined as item revenue plus freight.
+- Source model: `fct_order_financials`
+- Time grain: order-level (no time aggregation)
+- Notes: computed as `SUM(price) + SUM(freight_value)` over order items for a given `order_id`. Use this as the canonical “order economics” numerator for revenue-style KPIs.
 
 ---
 
-
-
-\## aov
-
-
-
-\- Definition: average gross order value per order in the period.
-
-\- Source model: `mart\_kpis\_weekly`, `mart\_kpis\_monthly` (derived from `fct\_order\_financials`)
-
-\- Time grain: weekly (`week\_start`) or monthly (`month\_start`)
-
-\- Notes: computed as `SUM(gross\_order\_value) / COUNT(DISTINCT order\_id)`.
-
-
+## aov
+- Definition: average gross order value per order in the period.
+- Source model: `mart_kpis_weekly` (derived from `fct_order_financials`)
+- Time grain: weekly (`week_start`)
+- Notes: computed as `SUM(gross_order_value) / COUNT(DISTINCT order_id)`.
 
 ---
 
-
-
-\## delivered\_rate
-
-
-
-\- Definition: fraction of orders with `order\_status = 'delivered'` in the period.
-
-\- Source model: `mart\_kpis\_weekly`, `mart\_kpis\_monthly`
-
-\- Time grain: weekly or monthly
-
-\- Notes: value range 0–1. Denominator is total orders in the period.
-
-
+## delivered_rate
+- Definition: fraction of orders with `order_status = 'delivered'` in the period.
+- Source model: `mart_kpis_weekly`
+- Time grain: weekly
+- Notes: value range 0–1. Denominator is total orders in the period.
 
 ---
 
-
-
-\## canceled\_rate
-
-
-
-\- Definition: fraction of orders with `order\_status = 'canceled'` in the period.
-
-\- Source model: `mart\_kpis\_weekly`, `mart\_kpis\_monthly`
-
-\- Time grain: weekly or monthly
-
-\- Notes: value range 0–1. Denominator is total orders in the period.
-
-
+## canceled_rate
+- Definition: fraction of orders with `order_status = 'canceled'` in the period.
+- Source model: `mart_kpis_weekly`
+- Time grain: weekly
+- Notes: value range 0–1. Denominator is total orders in the period.
 
 ---
 
-
-
-\## rolling\_4w\_orders\_avg
-
-
-
-\- Definition: trailing 4-week average of weekly orders.
-
-\- Source model: `mart\_kpis\_weekly`
-
-\- Time grain: weekly
-
-\- Notes: intended for smoothing volatility. If you use this in Excel, keep the window definition consistent (current week + previous 3 weeks).
-
-
+## rolling_4w_orders_avg
+- Definition: trailing 4-week average of weekly orders.
+- Source model: `mart_kpis_weekly`
+- Time grain: weekly
+- Notes: intended for smoothing volatility. Keep the window definition consistent (current week + previous 3 weeks).
 
 ---
 
-
-
-\## rolling\_4w\_aov\_avg
-
-
-
-\- Definition: trailing 4-week average of weekly AOV.
-
-\- Source model: `mart\_kpis\_weekly`
-
-\- Time grain: weekly
-
-\- Notes: smoothing metric; do not compare directly to monthly AOV without acknowledging the different grain.
-
-
+## rolling_4w_aov_avg
+- Definition: trailing 4-week average of weekly AOV.
+- Source model: `mart_kpis_weekly`
+- Time grain: weekly
+- Notes: smoothing metric; do not compare directly to monthly AOV without acknowledging the different grain.
 
 ---
 
-
-
-\## aov\_mom\_change
-
-
-
-\- Definition: month-over-month change in AOV (current month AOV minus prior month AOV, or percent change depending on your model implementation).
-
-\- Source model: `mart\_kpis\_monthly`
-
-\- Time grain: monthly
-
-\- Notes: confirm whether your implementation is absolute delta vs percent change; document that explicitly here once finalized.
-
-
+## cohort_month
+- Definition: the acquisition cohort month for a customer, defined as the month of the customer's first delivered order.
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: cohort grouping key for retention and LTV analysis.
 
 ---
 
-
-
-\## active\_customers
-
-
-
-\- Definition: count of distinct active customers (`customer\_unique\_id`) in the cohort at the given `month\_index`.
-
-\- Source model: `mart\_cohorts\_monthly`
-
-\- Time grain: cohort-month by month-index
-
-\- Notes: grain is `(cohort\_month, month\_index)`. This is the primary input for cohort retention heatmaps and curves.
-
-
+## month_index
+- Definition: number of months since `cohort_month` (0 = acquisition month).
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: the column index for cohort heatmaps and retention/LTV curves.
 
 ---
 
-
-
-\## new\_customers
-
-
-
-\- Definition: count of distinct customers whose first-ever order occurs in the week.
-
-\- Source model: `mart\_new\_vs\_returning\_weekly` (derived from `int\_customer\_order\_sequence`)
-
-\- Time grain: weekly
-
-\- Notes: “new” is based on `customer\_unique\_id` lifecycle sequencing.
-
-
+## cohort_size
+- Definition: number of acquired customers in the cohort (active_customers at `month_index = 0`).
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month
+- Notes: denominator for retention and LTV-per-acquired-customer calculations.
 
 ---
 
-
-
-\## returning\_customers
-
-
-
-\- Definition: count of distinct customers who have ordered before and place an order in the week.
-
-\- Source model: `mart\_new\_vs\_returning\_weekly` (derived from `int\_customer\_order\_sequence`)
-
-\- Time grain: weekly
-
-\- Notes: returning customers exclude first-time customers for that week.
-
-
+## active_customers
+- Definition: count of distinct active customers (`customer_unique_id`) in the cohort at the given `month_index`.
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: primary input for cohort retention heatmaps and curves. Grain is `(cohort_month, month_index)`.
 
 ---
 
-
-
-\## new\_customer\_share
-
-
-
-\- Definition: fraction of weekly active customers who are new.
-
-\- Source model: `mart\_new\_vs\_returning\_weekly`
-
-\- Time grain: weekly
-
-\- Notes: value range 0–1. Computed as `new\_customers / (new\_customers + returning\_customers)` (or equivalent denominator in your model).
-
-
+## cohort_orders
+- Definition: count of delivered orders placed by cohort customers at the given `month_index`.
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: useful for purchase-frequency interpretation alongside revenue.
 
 ---
 
-
-
-\## category\_orders
-
-
-
-\- Definition: count of distinct orders associated with a given product category in the week.
-
-\- Source model: `mart\_category\_weekly`
-
-\- Time grain: weekly by category
-
-\- Notes: grain is `(week\_start, product\_category\_name)`. If your mart filters to delivered orders, this metric is “delivered category orders” by design.
-
-
+## cohort_gross_revenue
+- Definition: sum of `gross_order_value` for delivered orders placed by cohort customers at the given `month_index`.
+- Source model: `mart_cohort_ltv_monthly` (derived from `fct_order_financials`)
+- Time grain: cohort-month by month-index
+- Notes: revenue proxy consistent with exec dashboard revenue definition.
 
 ---
 
-
-
-\## category\_revenue
-
-
-
-\- Definition: gross order value attributable to a product category in the week.
-
-\- Source model: `mart\_category\_weekly` (derived from items + order economics logic)
-
-\- Time grain: weekly by category
-
-\- Notes: if attribution is based on item-level sums, clarify whether revenue is item-level revenue (plus freight) or item-only. Align with how `gross\_order\_value` is defined.
-
-
+## retention_rate
+- Definition: fraction of the cohort active at the given month_index.
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: computed as `active_customers / cohort_size`. Value range 0–1.
 
 ---
 
-
-
-\## flow\_orders
-
-
-
-\- Definition: count of distinct orders for a given seller\_state → customer\_state flow in the week.
-
-\- Source model: `mart\_geo\_state\_flows\_weekly`
-
-\- Time grain: weekly by (seller\_state, customer\_state)
-
-\- Notes: grain is `(week\_start, seller\_state, customer\_state)`.
-
-
+## revenue_per_cohort_customer
+- Definition: gross revenue per acquired customer for the given month_index.
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: computed as `cohort_gross_revenue / cohort_size`. This is the month-by-month LTV contribution per acquired customer.
 
 ---
 
-
-
-\## flow\_revenue
-
-
-
-\- Definition: gross order value for a given seller\_state → customer\_state flow in the week.
-
-\- Source model: `mart\_geo\_state\_flows\_weekly`
-
-\- Time grain: weekly by (seller\_state, customer\_state)
-
-\- Notes: ensure this is consistent with `gross\_order\_value` and whether freight is included.
-
-
+## cumulative_revenue_per_cohort_customer
+- Definition: cumulative gross revenue per acquired customer up to the given month_index.
+- Source model: `mart_cohort_ltv_monthly`
+- Time grain: cohort-month by month-index
+- Notes: computed as cumulative SUM of `cohort_gross_revenue` over month_index divided by cohort_size. This is the LTV curve.
 
 ---
 
-
-
-\## aov\_proxy
-
-
-
-\- Definition: revenue per distinct order for the flow in the week.
-
-\- Source model: `mart\_geo\_state\_flows\_weekly`
-
-\- Time grain: weekly by (seller\_state, customer\_state)
-
-\- Notes: computed as `flow\_revenue / flow\_orders`. Named “proxy” because it is flow-aggregated, not a customer-level AOV.
-
-
+## new_customers
+- Definition: count of distinct customers whose first-ever order occurs in the week.
+- Source model: `mart_new_vs_returning_weekly` (derived from `int_customer_order_sequence`)
+- Time grain: weekly
+- Notes: “new” is based on `customer_unique_id` lifecycle sequencing.
 
 ---
 
-
-
-\## late\_delivery
-
-
-
-\- Definition: boolean indicator of whether the first delivered order arrived after the estimated delivery date.
-
-\- Source model: `mart\_experience\_retention\_90d`
-
-\- Time grain: segment-level
-
-\- Notes: segment key for experience. Grain is `(late\_delivery, review\_score)`.
-
-
+## returning_customers
+- Definition: count of distinct customers who have ordered before and place an order in the week.
+- Source model: `mart_new_vs_returning_weekly` (derived from `int_customer_order_sequence`)
+- Time grain: weekly
+- Notes: returning customers exclude first-time customers for that week.
 
 ---
 
-
-
-\## review\_score
-
-
-
-\- Definition: review score value used to segment first-order experience.
-
-\- Source model: `mart\_experience\_retention\_90d`
-
-\- Time grain: segment-level
-
-\- Notes: expected to be a small integer scale (commonly 1–5). Grain is `(late\_delivery, review\_score)`.
-
-
+## new_customer_share
+- Definition: fraction of weekly active customers who are new.
+- Source model: `mart_new_vs_returning_weekly`
+- Time grain: weekly
+- Notes: value range 0–1. Computed as `new_customers / (new_customers + returning_customers)` (or equivalent denominator in your model).
 
 ---
 
-
-
-\## customers
-
-
-
-\- Definition: count of customers (`customer\_unique\_id`) in the experience segment.
-
-\- Source model: `mart\_experience\_retention\_90d`
-
-\- Time grain: segment-level
-
-\- Notes: denominator for segment-level repeat behavior. Grain is `(late\_delivery, review\_score)`.
-
-
+## category_orders
+- Definition: count of distinct orders associated with a given product category in the week.
+- Source model: `mart_category_weekly`
+- Time grain: weekly by category
+- Notes: grain is `(week_start, product_category_name)`. If your mart filters to delivered orders, this metric is “delivered category orders” by design.
 
 ---
 
-
-
-\## repeat\_rate\_90d
-
-
-
-\- Definition: fraction of customers who place another order within 90 days of their first delivered order.
-
-\- Source model: `mart\_experience\_retention\_90d`
-
-\- Time grain: segment-level
-
-\- Notes: value range 0–1. Based on first delivered order only; confirm that “repeat” counts any subsequent order within 90 days of delivery date (not purchase date) to remain consistent.
-
-
+## category_revenue
+- Definition: gross order value attributable to a product category in the week.
+- Source model: `mart_category_weekly` (derived from items + order economics logic)
+- Time grain: weekly by category
+- Notes: align with how `gross_order_value` is defined and whether freight is included.
 
 ---
 
+## flow_orders
+- Definition: count of distinct orders for a given seller_state → customer_state flow in the week.
+- Source model: `mart_geo_state_flows_weekly`
+- Time grain: weekly by (seller_state, customer_state)
+- Notes: grain is `(week_start, seller_state, customer_state)`.
 
+---
 
-\## Suggested next additions (optional)
+## flow_revenue
+- Definition: gross order value for a given seller_state → customer_state flow in the week.
+- Source model: `mart_geo_state_flows_weekly`
+- Time grain: weekly by (seller_state, customer_state)
+- Notes: ensure this is consistent with `gross_order_value` and whether freight is included.
 
+---
 
+## aov_proxy
+- Definition: revenue per distinct order for the flow in the week.
+- Source model: `mart_geo_state_flows_weekly`
+- Time grain: weekly by (seller_state, customer_state)
+- Notes: computed as `flow_revenue / flow_orders`. Named “proxy” because it is flow-aggregated, not a customer-level AOV.
 
-If you want this contract to feel “production-ready” without adding the full Semantic Layer:
+---
 
-\- Add an \*\*Owner\*\* field per metric (e.g., “Analytics/BI”).
+## late_delivery
+- Definition: boolean indicator of whether the first delivered order arrived after the estimated delivery date.
+- Source model: `mart_experience_retention_90d`
+- Time grain: segment-level
+- Notes: segment key for experience. Grain is `(late_delivery, review_score)`.
 
-\- Add a \*\*Certification\*\* status (draft/active/deprecated).
+---
 
-\- Add a short \*\*SQL definition\*\* block for 3–5 highest-impact metrics (AOV, delivered\_rate, repeat\_rate\_90d).
+## review_score
+- Definition: review score value used to segment first-order experience.
+- Source model: `mart_experience_retention_90d`
+- Time grain: segment-level
+- Notes: expected to be a small integer scale (commonly 1–5). Grain is `(late_delivery, review_score)`.
 
-```
+---
 
+## customers
+- Definition: count of customers (`customer_unique_id`) in the experience segment.
+- Source model: `mart_experience_retention_90d`
+- Time grain: segment-level
+- Notes: denominator for segment-level repeat behavior. Grain is `(late_delivery, review_score)`.
 
+---
 
+## repeat_rate_90d
+- Definition: fraction of customers who place another order within 90 days of their first delivered order.
+- Source model: `mart_experience_retention_90d`
+- Time grain: segment-level
+- Notes: value range 0–1. Based on first delivered order only; confirm whether “repeat” is based on delivery date vs purchase date to remain consistent.
