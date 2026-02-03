@@ -25,7 +25,10 @@ The raw Olist dataset follows a **normalized transactional schema** centered aro
 
 This schema reflects how the data is produced operationally and is preserved as-is for traceability.
 
-[Raw Olist data schema]
+<p align="center">
+  <img src="docs/raw_olist_data_schema.webp" width="700">
+</p>
+
 *Figure: Normalized source schema showing orders, line items, payments, reviews, and reference entities.*
 
 ---
@@ -38,7 +41,9 @@ The raw schema is transformed using **dbt** into layered analytics models optimi
 
 The lineage diagram below shows how raw source tables feed intermediate semantic models and downstream analytics marts.
 
-[dbt lineage graph]
+<p align="center">
+  <img src="docs/dbt_lineage_graph.webp" width="700">
+</p>
 *Figure: dbt lineage graph illustrating the transformation from raw sources to analytics-ready marts.*
 
 
@@ -50,7 +55,9 @@ Three takeaways for stakeholders:
 2. **Revenue is concentrated across both categories and geography.** The top 10 categories drive **62.4%** of revenue, and **São Paulo (SP)** accounts for **41.9%** of customer orders while **70.8%** of seller-fulfilled orders originate from SP.
 3. **Cross-state fulfillment is the operational hotspot.** Only **35.8%** of orders are fulfilled within the same state; cross-state orders take **14.6 days** vs **8.4 days** in-state and have a higher late-delivery rate.
 
-[Revenue growth remains acquisition-led with modest returning contribution]
+<p align="center">
+  <img src="docs/new_vs_returning_customer_revenue.webp" width="700">
+</p>
 
 ---
 
@@ -60,26 +67,34 @@ Three takeaways for stakeholders:
 - **Holiday weeks create outsized volume spikes.** The week of Black Friday generated **R$ 474,624** in gross revenue which is about **2.8×** the weekly average.
 - **Order economics are stable and shipping is a meaningful but not dominant driver.** Shipping averages **14.2%** of gross revenue, and baskets are typically single-item with an average of **items** items per order.
 
-[Revenue is growing with seasonality; 4-week average smooths volatility]
+<p align="center">
+  <img src="docs/gross_revenue_with_4_week_rolling_average.webp" width="700">
+</p>
 
 ### 2) Customer retention & LTV
 - **Retention collapses after the first order.** Weighted month+1 retention is only **0.5%**, consistent with the low 90-day repeat rate of **2.1%**.
 - **LTV is almost entirely first-purchase revenue.** Average cumulative revenue per cohort customer is R$ **162** in month 0 and only R$ **163** by month 6, so repeat purchases contribute **0.4%** of 6-month value.
 
-[6-month LTV lift remains < 5 across cohorts; post-acquisition monetization is limited]
+<p align="center">
+  <img src="docs/6_month_LTV_lift_by_cohort.webp" width="700">
+</p>
 
 ### 3) Category portfolio & mix
 - **The catalog is concentrated.** The top 5 categories drive **39.3%** of revenue and the top 10 drive **62.4%**.
 - **High-revenue categories combine frequency + basket value.** Consistent leaders include *health & beauty*, *bed/bath/table*, *watches & gifts*, and *sports & leisure*.
 
-[Volume categories drive revenue; premium AOV categories are smaller]
+<p align="center">
+  <img src="docs/orders_by_AOV_and_revenue.webp" width="700">
+</p>
 
 ### 4) Geography & CX impact (delivery + reviews)
 - **Most commerce is cross-state.** Only **35.8%** of orders are in-state, and cross-state shipments are slower by an average of **6.2** days.
 - **Cross-state routes have higher service risk.** Late delivery rises from **4.3%** in-state to **6.3%** cross-state, with especially high late rates on major long-haul corridors (e.g. SP → RJ, SP -> BA).
 - **CX signals matter most where customers are already unhappy.** Late delivery is associated with lower repeat rates for low-rating customers, suggesting a “double hit” effect: poor experience + delay.
 
-[Interstate order volume is concentrated in a small number of core shipping lanes]
+<p align="center">
+  <img src="docs/interstate_orders_by_seller_customer.webp" width="700">
+</p>
 
 ---
 
