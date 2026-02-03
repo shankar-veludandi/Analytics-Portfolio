@@ -9,9 +9,11 @@ Insights and recommendations are provided on the following key areas:
 - **Category portfolio:** which categories drive revenue and how concentrated the mix is.
 - **Geography & CX:** cross-state flows, delivery time/late delivery, and how CX correlates with 90-day repeat behavior.
 
-**Deliverables**
-- **Excel dashboard (interactive):** `deliverables/olist_workbook.xlsx` (tabs: *Executive Summary*, *Cohort Retention & LTV*, *Category Portfolio & Mix*, *Geo & CX Impact*)
-- **dbt project (models + docs):** `models/` (staging → intermediate → marts)
+Targeted SQL queries regarding various business questions can be found [here](/models/marts)
+
+Excel dashboards used to report and explore sales trends can be found [here](olist_workbook.xlsx)
+
+dbt project models and docs can be found [here](/models)
 
 ---
 
@@ -26,10 +28,11 @@ The raw Olist dataset follows a **normalized transactional schema** centered aro
 This schema reflects how the data is produced operationally and is preserved as-is for traceability.
 
 <p align="center">
-  <img src="docs/raw_olist_data_schema.webp" width="700">
+  <img src="docs/raw_olist_data_schema.webp" width="800">
 </p>
-
-*Figure: Normalized source schema showing orders, line items, payments, reviews, and reference entities.*
+<p align="center">
+  <em>Normalized source schema showing orders, line items, payments, reviews, and reference entities.</em>
+</p>
 
 ---
 
@@ -42,9 +45,11 @@ The raw schema is transformed using **dbt** into layered analytics models optimi
 The lineage diagram below shows how raw source tables feed intermediate semantic models and downstream analytics marts.
 
 <p align="center">
-  <img src="docs/dbt_lineage_graph.webp" width="700">
+  <img src="docs/dbt_lineage_graph.png" width="1200">
 </p>
-*Figure: dbt lineage graph illustrating the transformation from raw sources to analytics-ready marts.*
+<p align="center">
+  <em>dbt lineage graph illustrating the transformation from raw sources to analytics-ready marts.</em>
+</p>
 
 
 ## Executive Summary
@@ -56,7 +61,7 @@ Three takeaways for stakeholders:
 3. **Cross-state fulfillment is the operational hotspot.** Only **35.8%** of orders are fulfilled within the same state; cross-state orders take **14.6 days** vs **8.4 days** in-state and have a higher late-delivery rate.
 
 <p align="center">
-  <img src="docs/new_vs_returning_customer_revenue.webp" width="700">
+  <img src="docs/new_vs_returning_customer_revenue.webp" width="800">
 </p>
 
 ---
@@ -68,7 +73,7 @@ Three takeaways for stakeholders:
 - **Order economics are stable and shipping is a meaningful but not dominant driver.** Shipping averages **14.2%** of gross revenue, and baskets are typically single-item with an average of **items** items per order.
 
 <p align="center">
-  <img src="docs/gross_revenue_with_4_week_rolling_average.webp" width="700">
+  <img src="docs/gross_revenue_with_4_week_rolling_avg.webp" width="800">
 </p>
 
 ### 2) Customer retention & LTV
@@ -76,7 +81,7 @@ Three takeaways for stakeholders:
 - **LTV is almost entirely first-purchase revenue.** Average cumulative revenue per cohort customer is R$ **162** in month 0 and only R$ **163** by month 6, so repeat purchases contribute **0.4%** of 6-month value.
 
 <p align="center">
-  <img src="docs/6_month_LTV_lift_by_cohort.webp" width="700">
+  <img src="docs/6_month_LTV_lift_by_cohort.webp" width="800">
 </p>
 
 ### 3) Category portfolio & mix
@@ -84,7 +89,7 @@ Three takeaways for stakeholders:
 - **High-revenue categories combine frequency + basket value.** Consistent leaders include *health & beauty*, *bed/bath/table*, *watches & gifts*, and *sports & leisure*.
 
 <p align="center">
-  <img src="docs/orders_by_AOV_and_revenue.webp" width="700">
+  <img src="docs/orders_by_AOV_and_revenue.webp" width="800">
 </p>
 
 ### 4) Geography & CX impact (delivery + reviews)
@@ -93,7 +98,7 @@ Three takeaways for stakeholders:
 - **CX signals matter most where customers are already unhappy.** Late delivery is associated with lower repeat rates for low-rating customers, suggesting a “double hit” effect: poor experience + delay.
 
 <p align="center">
-  <img src="docs/interstate_orders_by_seller_customer.webp" width="700">
+  <img src="docs/interstate_orders_by_seller_customer.webp" width="800">
 </p>
 
 ---

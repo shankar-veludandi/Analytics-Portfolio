@@ -1,82 +1,63 @@
 # Shankar’s Analytics Portfolio
 
-Hi, I’m **Shankar Veludandi** – a **Data Analyst** with a strong foundation in Python, SQL, and Power BI.
+This repository showcases end-to-end **data analytics projects** focused on transforming raw, messy data into **decision-ready insights** using industry-standard tools and workflows.
 
-This portfolio highlights projects where I:
+Across projects, I emphasize:
+- Clear **business problem framing**
+- Thoughtful **data modeling and metric definition**
+- Reproducible **SQL and analytics pipelines**
+- Stakeholder-ready **dashboards, visuals, and recommendations**
 
-- Start from a clear **business or domain problem**
-- Build reproducible **data pipelines** and data models
-- Perform **exploratory and statistical analysis**
-- Communicate **actionable insights** to non-technical stakeholders
-
-I also draw on my background in machine learning when predictive models add value to the analysis.
-
-## Projects
-
-### 🏠 [Boston & NYC Rental Market Analytics](./rental-market-analytics)
-
-**Type:** End-to-End BI / Market Analytics  
-**Tech:** Python, PostgreSQL, Power BI
-
-Compares the rental markets in **Boston** and **New York City** from a renter’s perspective using live listing data.
-
-- Built a cloud-hosted data warehouse with `raw → staging → cleaned → analytics` layers fed by Realtor and Redfin APIs.
-- Cleaned, merged, and enriched 20K+ active listings; added geospatial context and outlier handling.
-- Designed Power BI dashboards and a “Rental Finder” to answer questions like “Where can I afford to live with my budget?”
-
-See the project folder for the Power BI report, stakeholder slide deck, and full pipeline code.
+The projects below are designed to mirror how analytics teams operate in real production environments, from ingestion and modeling to insight delivery.
 
 ---
 
-### 🏀 [NBA Trade Market Dynamics & Team Success](./nba-financial-analytics)
+### 2) Olist Marketing Analytics  
+**Tools:** SQL, dbt, Excel  
+**Focus:** Marketing analytics, cohorts & LTV, analytics engineering
 
-**Type:** Sports Business Analytics · Panel Data  
-**Tech:** R, Python, web scraping, PCA, regression/classification
+An end-to-end marketing analytics project analyzing **98,962 e-commerce orders** from Olist (Brazilian marketplace) between **Jan 2017–Aug 2018** to understand revenue drivers, customer retention, and operational bottlenecks.
 
-Analyzes whether NBA teams that use cap space, luxury-tax room, and cash more efficiently actually perform better in the following season.
+**Business problem:**  
+What drives revenue today, why does customer lifetime value collapse after the first purchase, and where can growth and operations teams intervene?
 
-- Assembled a 10-season team–season panel from NBA Stats and Spotrac salary data.
-- Engineered financial utilization ratios and a PCA-based performance index.
-- Built and evaluated regression and classification models for next-season performance and playoff qualification, then translated results into guidance for front-office decision-makers.
+**What I did:**
+- Preserved the **normalized source schema** for traceability
+- Built layered **dbt models** (staging → intermediate → marts)
+- Defined reusable **semantic metrics** for revenue, retention, and delivery experience
+- Conducted **cohort and LTV analysis** to quantify repeat behavior
+- Delivered Excel dashboards for stakeholder reporting
 
----
+**Key insights:**
+- Only **2.1%** of customers repeat within 90 days; LTV is almost entirely first-purchase revenue
+- Top 10 categories drive **62.4%** of revenue, signaling high portfolio concentration
+- Cross-state deliveries are **6+ days slower** and materially more likely to be late
 
-### 💬 [AskReddit Engagement Analytics](./reddit-engagement-analytics)
-
-**Type:** Social Media / Content Analytics  
-**Tech:** Python, PRAW, scikit-learn, spaCy, NLTK
-
-Studies what makes r/AskReddit questions high vs low engagement based on wording, sentiment, and timing.
-
-- Collected and labeled ~13K posts via the Reddit API using comment volume as an engagement proxy.
-- Engineered text, sentiment, and temporal features; trained an SVM classifier with cross-validated tuning.
-- Showed that linguistic and sentiment features matter more than posting time, giving content teams concrete levers to experiment with.
-
----
-
-### 🐞 [Invasive Insect Analytics](./invasive-insect-analytics)
-
-**Type:** Environmental / Spatio-Temporal Analytics  
-**Tech:** Python, TensorFlow/Keras, GeoPandas
-
-Distinguishes invasive insect species from native look-alikes and forecasts their county-level spread patterns across the Northeastern U.S.
-
-- Pulled 100K iNaturalist observations and built a spatio-temporal dataset (grid cells × time).
-- Performed geospatial EDA and then trained a hybrid CNN–LSTM model to forecast future presence intensity.
-- Produced geographic error maps and confidence regions that help conservation teams prioritize survey and treatment efforts.
+📁 Project folder: ``
 
 ---
 
-### 🧪 [ChemsRUs Biodegradability Analytics](./chemical-biodegradability-analytics)
+## 1) Boston & NYC Rental Market Analytics  
+**Tools:** Python, SQL, PostGIS, Power BI  
+**Focus:** BI, market analysis, stakeholder decision support
 
-**Type:** Applied Predictive Analytics · Feature Selection  
-**Tech:** R, caret, glmnet, e1071, tidyverse
+A renter-focused market intelligence project that consolidates **active rental listings** from Realtor and Redfin into a cloud-hosted warehouse and powers an interactive **Power BI Rental Finder** for neighborhood-level affordability and supply analysis across **Boston** and **New York City**.
 
-Consults **ChemsRUs** in a Codalab competition for chemcial biodegradability prediction.
+**Business problem:**  
+Rental data is fragmented across platforms, making it difficult for renters to compare affordability, unit mix, and inventory concentration at the neighborhood level under realistic budget constraints.
 
-- Explored 168 molecular descriptors for ~1,000 compounds and set up a robust train/validation framework.
-- Compared baseline models to approaches using Recursive Feature Elimination and L1-regularized logistic regression.
-- Recommended an SVM model on a compact feature subset that improves AUC and highlights the most important descriptors for screening.
+**What I did:**
+- Built a **Python ETL pipeline** to ingest and deduplicate cross-platform rental listings
+- Designed a **star-schema analytics model** optimized for BI consumption
+- Defined affordability and supply metrics at the listing grain
+- Delivered a stakeholder-ready Power BI dashboard and insight deck
+
+**Key insights:**
+- NYC median rent is ~**34% higher** than Boston, with 1–3BR units **40–60% more expensive**
+- At a **$1.5K budget**, Boston offers **~3× more affordable listings**
+- Inventory in both cities is highly concentrated, shaping renter choice more than total supply
+
+📁 Project folder: ``
 
 ---
 
@@ -84,5 +65,3 @@ Consults **ChemsRUs** in a Codalab competition for chemcial biodegradability pre
 Email: [shankar.veludandi.02@gmail.com](mailto::shankar.veludandi.02@gmail.com)
 
 LinkedIn: [/shankar-veludandi](https://www.linkedin.com/in/shankar-veludandi-7a5b461b3/)
-
-I am actively seeking **entry-level Data Analyst roles** where I can work end-to-end—from data collection and modeling through to dashboards and stakeholder-ready insights.
