@@ -68,7 +68,7 @@ Three takeaways for stakeholders:
 - **Order economics are stable and shipping is a meaningful but not dominant driver.** Shipping averages **14.2%** of gross revenue, and baskets are typically single-item with an average of **items** items per order.
 
 <p align="center">
-  <img src="docs/gross_revenue_with_4_week_rolling_average.webp" width="800">
+  <img src="docs/gross_revenue_with_4_week_rolling_avg.webp" width="800">
 </p>
 
 ### 2) Customer retention & LTV
