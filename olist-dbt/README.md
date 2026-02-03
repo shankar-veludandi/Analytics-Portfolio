@@ -9,9 +9,11 @@ Insights and recommendations are provided on the following key areas:
 - **Category portfolio:** which categories drive revenue and how concentrated the mix is.
 - **Geography & CX:** cross-state flows, delivery time/late delivery, and how CX correlates with 90-day repeat behavior.
 
-**Deliverables**
-- **Excel dashboard (interactive):** `deliverables/olist_workbook.xlsx` (tabs: *Executive Summary*, *Cohort Retention & LTV*, *Category Portfolio & Mix*, *Geo & CX Impact*)
-- **dbt project (models + docs):** `models/` (staging → intermediate → marts)
+Targeted SQL queries regarding various business questions can be found [here](/models/marts)
+
+Excel dashboards used to report and explore sales trends can be found [here](olist_workbook.xlsx)
+
+dbt project models and docs can be found [here](/models)
 
 ---
 
@@ -28,8 +30,9 @@ This schema reflects how the data is produced operationally and is preserved as-
 <p align="center">
   <img src="docs/raw_olist_data_schema.webp" width="800">
 </p>
-
-*Figure: Normalized source schema showing orders, line items, payments, reviews, and reference entities.*
+<p align="center">
+  <em>Normalized source schema showing orders, line items, payments, reviews, and reference entities.</em>
+</p>
 
 ---
 
@@ -44,7 +47,9 @@ The lineage diagram below shows how raw source tables feed intermediate semantic
 <p align="center">
   <img src="docs/dbt_lineage_graph.png" width="1200">
 </p>
-*Figure: dbt lineage graph illustrating the transformation from raw sources to analytics-ready marts.*
+<p align="center">
+  <em>dbt lineage graph illustrating the transformation from raw sources to analytics-ready marts.</em>
+</p>
 
 
 ## Executive Summary
