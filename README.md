@@ -12,7 +12,7 @@ The projects below are designed to mirror how analytics teams operate in real pr
 
 ---
 
-### 2) Olist Marketing Analytics  
+## 🛒 [Olist Marketing Analytics](/olist-marketing-analytics)
 **Tools:** SQL, dbt, Excel  
 **Focus:** Marketing analytics, cohorts & LTV, analytics engineering
 
@@ -33,11 +33,9 @@ What drives revenue today, why does customer lifetime value collapse after the f
 - Top 10 categories drive **62.4%** of revenue, signaling high portfolio concentration
 - Cross-state deliveries are **6+ days slower** and materially more likely to be late
 
-📁 Project folder: ``
-
 ---
 
-## 1) Boston & NYC Rental Market Analytics  
+## 🏠 [Boston & NYC Rental Market Analytics](/bos-nyc-rental-market-analytics)
 **Tools:** Python, SQL, PostGIS, Power BI  
 **Focus:** BI, market analysis, stakeholder decision support
 
@@ -56,8 +54,6 @@ Rental data is fragmented across platforms, making it difficult for renters to c
 - NYC median rent is ~**34% higher** than Boston, with 1–3BR units **40–60% more expensive**
 - At a **$1.5K budget**, Boston offers **~3× more affordable listings**
 - Inventory in both cities is highly concentrated, shaping renter choice more than total supply
-
-📁 Project folder: ``
 
 ---
 
